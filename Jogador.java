@@ -1,9 +1,10 @@
 public class Jogador{
     private String id;
     private boolean tipo;
-    private JogoDados jogo;
-    private double aposta;
     private double saldo;
+    private double aposta;
+    private JogoDados jogo;
+
     public Jogador(String id, int qtd){
         this.id = id;
         this.jogo = new JogoDados(qtd);
@@ -16,10 +17,9 @@ public class Jogador{
         saldo -= aposta;
         return saldo;
     }
-    public void mostrarSaldoAtual(){
-        System.out.println(saldo);
-    }
-    public void inicializaDadosJogador(double vSaldo){
+    public void mostrarSaldoAtual() { System.out.println(saldo); }
+    public void inicializaDadosJogador(String nId, double vSaldo){
+        id = nId;
         saldo = vSaldo;
     }
     public double getSaldo(){
