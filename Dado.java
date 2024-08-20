@@ -2,18 +2,13 @@ import java.util.Random;
 
 public class Dado{
     private int numero;
-    private Random rnd = new Random();
-    public int sortearNumero(){
-        numero = rnd.nextInt(6) + 1;
-        return numero;
-    }
-    public void roll(){
+
+    public void sortearNumero(){
         System.out.println("Sou um dado rolando");
+        Random rnd = new Random();
+        numero = rnd.nextInt(6) + 1;
     }
     public int getNumero(){
         return numero;
-    }
-    public String toString(){
-        return "Numero: " + numero;
     }
 }
