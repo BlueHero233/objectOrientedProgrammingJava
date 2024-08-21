@@ -17,7 +17,7 @@ public class simuladorTorneio{
             entrada.nextLine(); //nescessario senao ele pula linha e quebra na entrada boolean
             switch ( opcao ){
                 case 1:
-                    if(torneio.getNumJogadores()>=10) System.out.println("Limite de 10 jogadores atingido. Não é possível adicionar mais jogadores"); //se tiver 10 jogadores, nao adiciona
+                    if(torneio.getNumeroJogadores()>=10) System.out.println("Limite de 10 jogadores atingido. Não é possível adicionar mais jogadores"); //se tiver 10 jogadores, nao adiciona
                     else {
                         System.out.println("id do jogador: ");
                         String id = entrada.nextLine(); //entrada do nome
@@ -30,7 +30,7 @@ public class simuladorTorneio{
                     }
                     break;
                 case 2:
-                    if(torneio.getNumJogadores()==0) System.out.println("Não há jogadores para remover"); //se nao tiver jogadores, throw exception
+                    if(torneio.getNumeroJogadores()==0) System.out.println("Não há jogadores para remover"); //se nao tiver jogadores, throw exception
                     else {
                         System.out.println("Id do jogador a ser removido: ");
                         String idRemover = entrada.nextLine();
@@ -38,7 +38,7 @@ public class simuladorTorneio{
                     }
                     break;
                 case 3:
-                    if (torneio.getNumJogadores()>1) torneio.iniciarTorneio(); //verifica se a quantidade de pessoas no torneio eh maior que 1
+                    if (torneio.getNumeroJogadores()>1) torneio.iniciarTorneio(); //verifica se a quantidade de pessoas no torneio eh maior que 1
                     else System.out.println("Adicione pelo menos 2 jogadores para iniciar o torneio");
                     break;
 

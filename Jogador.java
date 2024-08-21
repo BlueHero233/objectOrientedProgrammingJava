@@ -10,7 +10,7 @@ public class Jogador implements Serializable{
     public Jogador(String id, boolean humano){
         this.id = id;
         this.humano = humano;
-        this.saldo = 100;
+        this.saldo = 0;
     }
 
     public void atualizaSaldo(){

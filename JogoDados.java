@@ -1,4 +1,4 @@
-import java.io.Serializable
+import java.io.Serializable;
 public class JogoDados implements Serializable{
     private final Dado[] dados;
 
@@ -10,8 +10,11 @@ public class JogoDados implements Serializable{
     public void rolarDados(){ for (Dado dado : dados) dado.sortearNumero(); }
 
     public int craps(){
-        int craps = 0;
-        for (Dado item : dados) craps += item.getNumero();
+        dados[0].sortearNumero();
+        dados[1].sortearNumero();
+        int dado1 = dados[0].getNumero();
+        int dado2 = dados[1].getNumero();
+        int craps = dado1+dado2;
         System.out.println("Soma obtida: " + craps);
         if (craps == 7 || craps == 11)
             return 1;
@@ -21,11 +24,11 @@ public class JogoDados implements Serializable{
             int point = craps;
             while (true){
                 craps = 0;
-                for (Dado value : dados) {
-                    value.sortearNumero();
-                    System.out.println(value.getNumero());
-                }
-                for (Dado dado : dados) craps += dado.getNumero();
+                dados[0].sortearNumero();
+                dados[1].sortearNumero();
+                int dado1 = dados[0].getNumero();
+                int dado2 = dados[1].getNumero();
+                craps += dado1+dado2;
                 if (craps == point)
                     return 1;
                 else if (craps == 2 || craps == 3 || craps == 12)

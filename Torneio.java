@@ -5,223 +5,334 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 
-public class Torneio{
-    private Jogador[] jogadores; //vetor de jogadores
-    private int numJogadores; //quantidade de jogadores
-    private static final int capacidadeMaxima = 10;
+public class Torneio {
+    private Jogador[] jogadores;
+    private int numJogadores;
+    private static final int capacidadeMax = 10;
 
-    public Torneio(){ //inicializa o torneio com 0 jogadores e capacidade maxima de 10
-        this.jogadores = new Jogador[capacidadeMaxima];
+
+    public Torneio() { //inicializa o torneio com 0 jogadores e capacidade 10
+        this.jogadores = new Jogador[capacidadeMax];
         this.numJogadores = 0;
     }
-    public int getNumJogadores() { return this.numJogadores; } //retorna quantidade de jogadores
+
     public void adicionarJogador(Jogador jogador) {
-        if (numJogadores < jogadores.length) { //verifica se nao excede 10 jogadores
-            jogadores[numJogadores++] = jogador; //incrementa o indice
-            System.out.println("Jogador " + jogador.getId() + " Adicionado com sucesso!");
-        } else System.out.println("Jogador não adicionado :(");
-    }
-    public void removerJogador(String id) {
-        for (int i = 0; i < numJogadores; i++) { //percorre o vetor de jogadores
-            if (jogadores[i].getId().equals(id)) { //se achar o id
-                jogadores[i] = jogadores[numJogadores-1]; //joga o ultimo jogador para o indice achado
-                jogadores[numJogadores-1] = null; //remove o jogador
-                numJogadores--; //diminiu o tamanho do vetor
-                System.out.println("Jogador " + id + " Removido com sucesso!");
-                break; //sai do laco for
-            }
-            else { System.out.println("Jogador " + id + "não encontrado :("); } //se nao achar, mensagem de erro
+        if (numJogadores < jogadores.length) { //verifica se o limite ja nao foi alcançado
+            jogadores[numJogadores++] = jogador; //incrementa o numero de jogadores
+            System.out.println("Jogador " + jogador.getId() + " adicionado.");
+        } else {
+            System.out.println("Não é possível adicionar mais jogadores.");
         }
     }
-    public void gravarArquivo(){ //cria um arquivo
+
+    public void removerJogador(String id) {
+        for (int i = 0; i< numJogadores; i++) {
+            if (jogadores[i].getId().equals(id)) {
+                jogadores[i] = jogadores[numJogadores -1]; //passa o ultimo jogador para a posicao do jogador removido
+                jogadores[numJogadores -1] = null;
+                numJogadores--; //diminui a quantidade de jogadores
+                System.out.println("Jogador " + id + " removido com sucesso.");
+                break;
+            }
+            else System.out.println("Jogador " + id + " não encontrado."); //caso o id do jogador que se deseja remover nao seja encontrado
+        }
+    }
+
+    public int getNumeroJogadores(){
+        return this.numJogadores;
+    }
+
+    public void gravarArquivo() {
         File arquivo = new File("Arquivo.dat");
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream( arquivo );
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream( fileOutputStream );
+            FileOutputStream fileOutputStream = new FileOutputStream(arquivo);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
             objectOutputStream.writeObject(jogadores);
             objectOutputStream.flush();
             objectOutputStream.close();
             fileOutputStream.close();
-            System.out.println("Arquivo " + arquivo.getName() + " gravado com sucesso!");
-        } catch (Exception e) { System.out.println(" Erro ao gravar arquivo :("); }
+
+            System.out.println("Dados gravados com sucesso " + arquivo.getName());
+        } catch (Exception e) {
+            System.err.println("Erro ao gravar arquivo: " + e);
+        }
     }
-    public void lerArquivo(){ //le um arquivo
+
+
+    public void lerArquivo() {
         File arquivo = new File("Arquivo.dat");
-        try{
+        try {
             FileInputStream fileInputStream = new FileInputStream(arquivo);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
             jogadores = (Jogador[]) objectInputStream.readObject();
-            numJogadores = jogadores.length;
+            numJogadores = jogadores.length; // Atualiza o número de jogadores
             objectInputStream.close();
             fileInputStream.close();
-            System.out.println("Arquivo " + arquivo.getName() + " lido com sucesso!");
-        } catch (Exception e) { System.out.println("Erro ao ler arquivo :("); }
+
+            System.out.println("Dados lidos com sucesso " + arquivo.getName());
+        } catch (Exception e) {
+            System.err.println("Erro ao ler arquivo: " + e);
+        }
     }
-    public void iniciarTorneio(){
-        int rodadas = 1; //contador de rodadas
-        boolean ganhador = false;
-        for (int i = 0; i < numJogadores; i++) jogadores[i].setSaldo(100); //inicia o saldo toda vez que o torneio comeca
+
+    public void iniciarTorneio() {
+        int rodadas = 1;
+        for(int i = 0; i< numJogadores; i++) jogadores[i].setSaldo(100); //set o saldo para o valor original(100)
+
         boolean fimTorneio = false;
-        Scanner entrada = new Scanner(System.in); //entrada teclado
+        Scanner sc = new Scanner(System.in);
+
+        //usuario escolhe o jogo a cada inicio de torneio
         System.out.println("Escolha um jogo");
         System.out.println("1 - Jogo de Azar;");
         System.out.println("2 - Jogo do Porquinho;");
-        int opcao = entrada.nextInt();
-        entrada.nextLine();
-        while (!fimTorneio){
-            System.out.println("Rodada " + rodadas++ );
-            switch (opcao){
+        System.out.print("Opção: ");
+        int op = sc.nextInt();
+        sc.nextLine();
+
+        while(!fimTorneio){
+            System.out.println("Rodada " + rodadas++);
+
+            switch (op) {
                 case 1:
-                    while (!ganhador){
+                    boolean temGanhador = false;
+
+                    while(!temGanhador) {
                         int valor = 0;
                         int numGanhadores = 0;
                         int[] ganhadores = new int[numJogadores];
-                        int indice = 0;
-                        pedirAposta(entrada); //funcao para pedir aposta cada jogador
-                        for (int i = 0; i < numJogadores; i++) {
-                            if (jogadores[i].getSaldo()>0){ //verifica se tem saldo positivo
-                                jogadores[i].setJogo(2); //adiciona dois dados no jogo
-                                jogadores[i].rolarDados(); //rola os dados
-                                if (jogadores[i].jogoCraps()==1){ //retorno de jogoCraps é 1 se o jogador venceu
-                                    System.out.println(jogadores[i].getId() + " ganhou!");
-                                    ganhadores[indice++]=i;
-                                    numGanhadores++;
-                                    ganhador = true;
+                        int indexGanhadores = 0;
+
+                        //loop para pedir a aposta dos jogadores
+                        for(int i = 0; i< numJogadores; i++){
+                            if(jogadores[i].getSaldo()>0) { //verifica se o jogador ja nao foi desqualificado
+                                if (jogadores[i].getHumano()==true){ //ira pedir a aposta apenas dos jogadores humanos
+                                    System.out.printf("valor da aposta de " + jogadores[i].getId() + ": ");
+                                    int aposta = sc.nextInt();
+                                    sc.nextLine();
+                                    jogadores[i].setAposta(aposta);
                                 }
-                                else System.out.println("Jogador " + jogadores[i].getId() + " perdeu :(");
                             }
-                            else System.out.println("Jogador nao tem saldo :(");
                         }
-                        int maiorAposta = 0;
-                        if (numGanhadores>0){
-                            int numGanhadoresMaiorAposta = 0;
-                            for (int i = 0; i < numGanhadores; i++) {
-                                int j = ganhadores[i];
-                                int apostaAux = jogadores[j].getAposta();
-                                if (apostaAux>maiorAposta){
-                                    maiorAposta = apostaAux;
-                                    numGanhadoresMaiorAposta = 1;
-                                }else if (maiorAposta==apostaAux) numGanhadoresMaiorAposta++;
+
+                        //jogadores rolam os dados
+                        for(int i = 0; i< numJogadores; i++){
+                            if(jogadores[i].getSaldo()>0){
+                                jogadores[i].setJogo(2);
+                                jogadores[i].rolarDados();
+
+                                if(jogadores[i].jogoCraps()==1){ //jogoAzar retorna 1 caso o jogador ganhe
+                                    System.out.println(jogadores[i].getId() + " ganhou");
+                                    System.out.println();
+
+                                    ganhadores[indexGanhadores++] = i; //adiciona a posicao do jogador ganhador em um vetor de ganhadores
+                                    numGanhadores++; //incrementa o numero de ganhadores
+                                    temGanhador = true; //true caso haja ganhador
+                                } else { //caso o jogador perca
+                                    System.out.println(jogadores[i].getId() + " perdeu");
+                                    System.out.println();
+                                }
                             }
-                            for (int i = 0; i < numJogadores; i++) {
-                                boolean ganhadorMaiorAposta = false;
-                                for (int j = 0; j < numGanhadores; j++) {
-                                    if (ganhadores[j]==i && jogadores[i].getAposta()==maiorAposta){
-                                        ganhadorMaiorAposta = true;
+                        }
+
+                        int maiorAposta = 0;
+                        if(numGanhadores>0){
+                            int numGanhadoresMaiorAposta=0;
+
+                            for(int i=0; i<numGanhadores; i++) {
+                                int jogadorIndex = ganhadores[i];
+                                int aposta = jogadores[jogadorIndex].getAposta();
+
+                                if(aposta>maiorAposta) {
+                                    maiorAposta = aposta;
+                                    numGanhadoresMaiorAposta = 1; // Resetar contagem para novo maior valor
+                                }else if(aposta==maiorAposta)
+                                    numGanhadoresMaiorAposta++; // Contar quantos têm a maior aposta
+                            }
+
+                            for(int i = 0; i< numJogadores; i++) {
+                                boolean ehGanhadorComMaiorAposta = false;
+                                for (int k=0; k<numGanhadores; k++) {
+                                    if (ganhadores[k]==i && jogadores[i].getAposta()==maiorAposta) {
+                                        ehGanhadorComMaiorAposta = true;
                                         break;
                                     }
                                 }
-                                if (!ganhadorMaiorAposta && jogadores[i].getSaldo()>0){
+                                if(!ehGanhadorComMaiorAposta && jogadores[i].getSaldo()>0){
                                     jogadores[i].atualizaSaldo();
                                     valor += jogadores[i].getAposta();
                                 }
                             }
-                            if (numGanhadoresMaiorAposta>0){
-                                int premio = valor/numGanhadoresMaiorAposta;
-                                for (int i = 0; i < numGanhadores; i++) {
-                                    int j = ganhadores[i];
-                                    if (jogadores[j].getAposta()==maiorAposta){
-                                        jogadores[j].setSaldo(premio);
+
+                            if(numGanhadoresMaiorAposta>0) {
+                                int premio = valor / numGanhadoresMaiorAposta;
+                                for (int i=0; i<numGanhadores; i++) {
+                                    int jogadorIndex = ganhadores[i];
+                                    if (jogadores[jogadorIndex].getAposta() == maiorAposta) {
+                                        jogadores[jogadorIndex].setSaldo(premio);
                                     }
                                 }
                             }
-                        }else System.out.println("Todos os jogadores perderam :(");
+
+                        }else
+                            System.out.println("Todos os jogadores perderam :(");
+
                         System.out.println("Fim da Rodada");
-                        for (int i = 0; i < numJogadores; i++) {
-                            boolean ganhadorMaiorAposta = false;
-                            for (int j = 0; j < numGanhadores; j++) {
-                                if (ganhadores[j]==i && jogadores[i].getAposta()==maiorAposta){
-                                    ganhadorMaiorAposta = true;
+                        //cada final de rodada, imprime o jogador ganhador e o saldo de cada jogador
+                        for(int i = 0; i< numJogadores; i++) {
+                            for (int k=0; k<numGanhadores; k++) {
+                                if (ganhadores[k]==i && jogadores[i].getAposta()==maiorAposta) {
+                                    System.out.println("Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo() + " (Ganhador da Rodada)");
                                     break;
                                 }
+                                else System.out.println("Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo());
                             }
-                            System.out.println(ganhadorMaiorAposta ? jogadores[i].getId() + " Ganhou!" : "Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo());
-                        } break;
-                    } break;
+                        }
+                        break;
+                    }
+                    break;
+
                 case 2:
-                    while(!ganhador){
+                    temGanhador = false;
+
+                    while(!temGanhador) {
                         int valor = 0;
-                        int [] tentativas = new int[numJogadores];
-                        pedirAposta(entrada);
-                        for (int i = 0; i < numJogadores; i++) {
-                            if (jogadores[i].getSaldo()>0){
+                        int[] tentativas = new int[numJogadores]; //vetor para guardar o numero de tentativas de cada jogador
+
+                        //pede o valor da aposta de cada jogador humano
+                        for(int i = 0; i< numJogadores; i++){
+                            if(jogadores[i].getSaldo()>0){ //verifica se o jogador ja nao foi desqualificado
+                                if (jogadores[i].getHumano()){
+                                    System.out.printf("valor da aposta de " + jogadores[i].getId() + ": ");
+                                    int aposta = sc.nextInt();
+                                    sc.nextLine();
+                                    jogadores[i].setAposta(aposta);
+                                }
+                            }
+                        }
+
+                        //jogadores rolam os dados
+                        for(int i = 0; i< numJogadores; i++){
+                            if(jogadores[i].getSaldo()>0){//verifica se o jogador ja nao foi desqualificado
                                 jogadores[i].setJogo(2);
                                 System.out.println("Jogador " + jogadores[i].getId() + " rolando os dados:");
-                                tentativas[i]=jogadores[i].jogoDoble();
+
+                                tentativas[i] = jogadores[i].jogoDoble(); //guarda o numero de tentativas do jogador na posicao correspondente
+
                                 System.out.println("Valor Atingido");
-                            }else jogadores[i].setAposta(0);
+                                System.out.println();
+                            }else
+                                jogadores[i].setAposta(0);
                         }
+
                         int menor = Integer.MAX_VALUE;
-                        for (int i = 0; i < numJogadores; i++) if (tentativas[i] < menor && tentativas[i] != 0) menor = tentativas[i];
+                        //acha o menor numero de tentativas entre todos os jogadores
+                        for(int i = 0; i< numJogadores; i++) {
+                            if(tentativas[i]<menor && tentativas[i]!=0) {
+                                menor = tentativas[i];
+                            }
+                        }
+
                         int numGanhadores = 0;
                         int[] ganhadores = new int[numJogadores];
-                        for (int i = 0; i < numJogadores; i++) if (tentativas[i] == menor) ganhadores[numGanhadores++] = i;
 
-                        int maiorAposta = 0;
-                        int numGanhadoresMaiorAposta = 0;
-                        for (int i = 0; i < numGanhadores; i++) {
-                            int j = ganhadores[i];
-                            int apostaAux = jogadores[j].getAposta();
-                            if (apostaAux>maiorAposta){
-                                maiorAposta = apostaAux;
-                                numGanhadoresMaiorAposta = 1;
-                            }else if (maiorAposta==apostaAux) numGanhadoresMaiorAposta++;
+                        //loop conta quantos jogadores possuem o menor numero de tentativas
+                        for(int i = 0; i< numJogadores; i++) {
+                            if(tentativas[i]==menor) {
+                                ganhadores[numGanhadores++] = i; //guarda a posicao dos ganhadores em um vetor
+                            }
                         }
-                        for (int i = 0; i < numJogadores; i++) {
-                            ganhador = false;
-                            for (int j = 0; j < numGanhadores; j++) {
-                                if (ganhadores[j]==i && jogadores[i].getAposta()==maiorAposta){
-                                    ganhador = true;
+
+                        int maiorAposta = getMaiorAposta(numGanhadores, ganhadores);
+
+                        for(int i = 0; i< numJogadores; i++) {
+                            boolean isGanhador = false;
+
+                            //verifica se o jogador eh ganhador
+                            for(int k=0; k<numGanhadores; k++) {
+                                if(ganhadores[k]==i && jogadores[i].getAposta()==maiorAposta) {
+                                    isGanhador = true;
                                     break;
                                 }
                             }
-                            if (!ganhador && jogadores[i].getSaldo()>0){
-                                jogadores[i].atualizaSaldo();
-                                valor += jogadores[i].getAposta();
+
+                            //caso o jogador nao seja ganhador
+                            if(!isGanhador && jogadores[i].getSaldo()>0) {
+                                jogadores[i].atualizaSaldo(); //atualiza o Saldo(desconta o valor apostado)
+                                valor += jogadores[i].getAposta(); //soma a aposta no valor da rodada
                             }
                         }
-                        if (numGanhadoresMaiorAposta>0){
-                            int premio = valor/numGanhadoresMaiorAposta;
-                            for (int i = 0; i < numGanhadores; i++) if (jogadores[ganhadores[i]].getSaldo()==maiorAposta) jogadores[ganhadores[i]].setSaldo(premio);
+
+                        if(numGanhadores>0) {
+                            int premio = valor/numGanhadores; //distribui o premio igualmente entre os ganhadores
+                            for(int i=0; i<numGanhadores; i++) {
+                                if(jogadores[ganhadores[i]].getAposta()==maiorAposta)
+                                    jogadores[ganhadores[i]].setSaldo(premio);
+                            }
                         }
-                        ganhador = true;
-                        System.out.println("Fim da Rodada");
-                        for (int i = 0; i < numJogadores; i++) {
+                        temGanhador = true;
+
+                        System.out.println("*Fim da Rodada*");
+                        //cada fim de rodada, imprime o saldo e o numero de tentativas dos jogadores ativos
+                        for (int i = 0; i< numJogadores; i++) {
                             if(tentativas[i]!=0){
                                 System.out.println("Total de tentativas de " + jogadores[i].getId() + ": " + tentativas[i]);
                                 System.out.println("Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo());
                             }
                         }
-                        for (int i = 0; i < numJogadores; i++) for (int j = 0; j < numGanhadores; j++) if (ganhadores[j] == i && jogadores[ganhadores[j]].getAposta() == maiorAposta) System.out.println("Jogador " + jogadores[i].getId() + " Ganhou a rodada!");
+
+                        for (int i = 0; i< numJogadores; i++)
+                            for(int k=0; k<numGanhadores; k++)
+                                if(i==ganhadores[k] && jogadores[ganhadores[k]].getAposta()==maiorAposta)
+                                    System.out.println("-->Ganhador da rodada: " + jogadores[i].getId());
                         break;
                     }
                     break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + opcao);
             }
-            int jogadoresAtivos = 0;
-            for (int i = 0; i < numJogadores; i++) if (jogadores[i].getSaldo() > 0) jogadoresAtivos++;
 
+            //verifica quantos jogadores ativos ainda restam no torneio
+            int jogadoresAtivos = 0;
+            for(int i = 0; i< numJogadores; i++) {
+                if(jogadores[i].getSaldo()>0){
+                    jogadoresAtivos++;
+                }
+            }
+
+            //caso reste apenas um jogador com saldo positivo
             if(jogadoresAtivos==1){
-                fimTorneio = true;
-                rodadas -= 1;
-                System.out.println("Resultado Final");
-                System.out.println("Rodadas jogadas: " + rodadas);
-                for (int i = 0; i < numJogadores; i++) System.out.println(jogadores[i].getSaldo() > 0 ? "Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo() + "Ganhador!" : "Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo());
+                fimTorneio = true; //fim do Torneio com apenas 1 jogador restante
+                rodadas = rodadas-1;
+
+                //imprime o resultado final do torneio
+                System.out.println();
+                System.out.println("*RESULTADO FINAL*");
+                System.out.println("Rodadas jogadas: " + rodadas); //imprime a quantidade de rodadas do torneio
+                for (int i = 0; i < numJogadores; i++) {
+                    if(jogadores[i].getSaldo()>0)
+                        System.out.println("Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo() + "(Ganhador)");
+                    else
+                        System.out.println("Saldo de " + jogadores[i].getId() + ": " + jogadores[i].getSaldo());
+                }
             }
         }
     }
 
-    public void pedirAposta(Scanner scanner) {
-        for (int i = 0; i < numJogadores; i++) {
-            if (jogadores[i].getSaldo()>0){
-                if (jogadores[i].getHumano()){
-                    System.out.println("Valor da aposta de " + jogadores[i].getId() + ": ");
-                    int aposta = scanner.nextInt();
-                    scanner.nextLine();
-                    jogadores[i].setAposta(aposta);
-                }
-            }
+    private int getMaiorAposta(int numGanhadores, int[] ganhadores) {
+        int maiorBet = 0;
+        int numGanhadoresMaiorBet=0;
+
+        for(int i = 0; i< numGanhadores; i++){
+            int jogadorIndex = ganhadores[i];
+            int aposta = jogadores[jogadorIndex].getAposta();
+
+            if(aposta>maiorBet) {
+                maiorBet = aposta;
+                numGanhadoresMaiorBet=1;
+            }else if(maiorBet==aposta)
+                numGanhadoresMaiorBet++;
         }
+        return maiorBet;
     }
 }
