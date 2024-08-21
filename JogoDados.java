@@ -1,18 +1,18 @@
-public class JogoDados{
-    private Dado[] dados;
+import java.io.Serializable
+public class JogoDados implements Serializable{
+    private final Dado[] dados;
 
     public JogoDados(int qtd){
         dados = new Dado[qtd];
-        for(int i=0;i<dados.length; i++)
-            dados[i] = new Dado();
+        for(int i=0;i<dados.length; i++) dados[i] = new Dado();
     }
-    public void rolarDados(){
-        for (Dado dado : dados) dado.sortearNumero();
-    }
+
+    public void rolarDados(){ for (Dado dado : dados) dado.sortearNumero(); }
+
     public int craps(){
         int craps = 0;
         for (Dado item : dados) craps += item.getNumero();
-        System.out.println(craps);
+        System.out.println("Soma obtida: " + craps);
         if (craps == 7 || craps == 11)
             return 1;
         else if (craps == 2 || craps == 3 || craps == 12)
@@ -25,8 +25,7 @@ public class JogoDados{
                     value.sortearNumero();
                     System.out.println(value.getNumero());
                 }
-                for (Dado dado : dados)
-                    craps += dado.getNumero();
+                for (Dado dado : dados) craps += dado.getNumero();
                 if (craps == point)
                     return 1;
                 else if (craps == 2 || craps == 3 || craps == 12)
@@ -43,12 +42,8 @@ public class JogoDados{
             dados[1].sortearNumero();
             int dado1 = dados[0].getNumero();
             int dado2 = dados[1].getNumero();
-            if (dado1 == dado2){
-                if (dado1==1)
-                    dobles += 30;
-                else
-                    dobles += (dado1*dado2)*2;
-            }else dobles += (dado1*dado2);
+            System.out.println(dado1 + "+" + dado2);
+            dobles += dado1 == dado2 ? dado1 == 1 ? 30 : (dado1 * dado2) * 2 : (dado1 * dado2);
             System.out.println("Pontos atuais: " + dobles);
         }
         return tentativas;

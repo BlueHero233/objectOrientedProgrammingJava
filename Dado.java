@@ -1,14 +1,12 @@
 import java.util.Random;
+import java.io.Serializable;
 
-public class Dado{
+public class Dado implements Serializable {
     private int numero;
 
     public void sortearNumero(){
-        System.out.println("Sou um dado rolando");
         Random rnd = new Random();
         numero = rnd.nextInt(6) + 1;
     }
-    public int getNumero(){
-        return numero;
-    }
+    public int getNumero(){ return numero; }
 }
