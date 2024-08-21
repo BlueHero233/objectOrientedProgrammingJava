@@ -7,19 +7,19 @@ public class Jogador implements Serializable{
     private int aposta;
     private JogoDados jogo;
 
-    public Jogador(String id, boolean humano){
+    public Jogador(String id, boolean humano){ //inicializa o jogador com 0 saldo
         this.id = id;
         this.humano = humano;
         this.saldo = 0;
     }
 
-    public void atualizaSaldo(){
+    public void atualizaSaldo(){ //atualiza o saldo caso ganhe a aposta
         if(!humano)
             this.aposta = saldo/5;
         this.saldo -= aposta;
     }
 
-    public void rolarDados(){
+    public void rolarDados(){ //rola os dados
         System.out.println("Sou o jogador: "+id+" e estou rolando os dados: ");
         jogo.rolarDados();
     }
